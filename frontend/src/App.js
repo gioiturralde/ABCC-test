@@ -1,12 +1,17 @@
 import './App.css';
-import {useState} from "react"
+import {useState} from "react";
+import Axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+
 function App() {
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Los meses en JavaScript van de 0 a 11
+  const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   const dateString = `${year}-${month}-${day}`;
 
+  //constantes que capturan el input
   const[sku,setSku] = useState("");
   const[articulo,setArticulo] = useState("");
   const[marca,setMarca] = useState("");
@@ -20,11 +25,40 @@ function App() {
   const[descontinuado,setDescontinuado] = useState(0);
   const[fechabaja,setFechaBaja] = useState("1900-01-01");
 
-  const mostrarDatos = ()=>{
-    alert(sku);
+  //tabla para mostrar registros
+  const [listaArticulos, setArticulos] = useState([]);
+
+
+//funcion para agregar articulo
+  const agregar = ()=>{
+    Axios.post("http://localhost:3001/create", {
+      sku:sku,
+      articulo:articulo,
+      marca:marca,
+      modelo:modelo,
+      departamento:departamento,
+      clase:clase,
+      familia:familia,
+      fechaalta:fechaalta,
+      stock:stock,
+      cantidad:cantidad,
+      descontinuado:descontinuado,
+      fechabaja:fechabaja
+    }).then(()=>{
+      getArticulos();
+      alert("Articulo registrado");
+    });
+  }
+
+//funcion para mostrar articulos
+  const getArticulos = ()=>{
+    Axios.get("http://localhost:3001/articulos").then((response)=>{
+      setArticulos(response.data);
+    });
   }
   
-
+//funcion para eliminar articulo
+//funcion para modificar articulo
 
   return (
     <div className="App">
@@ -33,7 +67,7 @@ function App() {
         onChange={(event)=>{
           setSku(event.target.value);
         }}
-      type="number" id="sku"></input></label><br/>
+      type="text" id="sku"></input></label><br/>
 
       <label>Articulo: <input 
               onChange={(event)=>{
@@ -81,14 +115,26 @@ function App() {
 
       <label>Cantidad: <input 
               onChange={(event)=>{
-                setStock(event.target.value);
+                setCantidad(event.target.value);
               }}
       type="number" id="cantidad"></input></label><br/>
 
       <label>Descontinuado: <input type="number" id="descontinuado" disabled></input></label><br/>
       <label>Fecha Baja: <input type="date" id="fechabaja" disabled></input></label><br/>
-      <button onClick={mostrarDatos}>Registrar</button>
+      <button className='btn btn-success' onClick={agregar}>Registrar</button>
 
+     </div>
+     <div class="lista">
+      <button onClick={getArticulos}>Consultar</button>
+
+      {
+        listaArticulos.map((val,key)=>{
+          return <div class="">{val.articulo}</div> 
+        })
+
+
+
+      }
      </div>
 
     </div>
