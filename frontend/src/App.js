@@ -23,7 +23,7 @@ function App() {
   const[stock,setStock] = useState("");
   const[cantidad,setCantidad] = useState("");
   const[descontinuado,setDescontinuado] = useState(0);
-  const[fechabaja,setFechaBaja] = useState("1900-01-01");
+  const[fechabaja,setFechaBaja] = useState("01-01-1900");
 
   //componentes
   const [listaArticulos, setArticulos] = useState([]);
@@ -103,26 +103,23 @@ function App() {
       });
   };
   
-  // Fetch clases when departamento changes
   useEffect(() => {
     if (departamento) {
       getClases(departamento);
     } else {
-      setClases([]); // Clear classes if no department is selected
-      setClase(''); // Reset selected class
-      setFamilias([]); // Clear families if no department is selected
+      setClases([]); 
+      setClase(''); 
+      setFamilias([]); 
     }
   }, [departamento]);
-
-  // Fetch familias when clase changes
+ 
   useEffect(() => {
     if (clase) {
       getFamilias(clase);
     } else {
-      setFamilias([]); // Clear families if no class is selected
+      setFamilias([]);
     }
   }, [clase]);
-
 
   
 //funcion para eliminar articulo
@@ -136,7 +133,7 @@ function App() {
     </div>
         <div class="card text-center">
       <div class="card-header">
-        Featured
+        ABCC Test
       </div>
       <div className="card-body">
         <div className="input-group input-group-sm mb-3">
@@ -198,6 +195,8 @@ function App() {
           <label className="input-group-text">Clase</label>
           <select
             className="form-select"
+            onChange={(event) => setClase(event.target.value)}
+            value={clase}
             disabled={!departamento}>
             <option value="" ></option>
             {listaClases.map(clase => (
@@ -213,6 +212,8 @@ function App() {
           <label className="input-group-text" id="basic-addon1">Familia</label>
           <select
           className="form-select"
+          onChange={(event) => setFamilia(event.target.value)}
+          value={familia}
           disabled={!clase}>
           <option value=""></option>
           {listaFamilias.map(familia => (
@@ -223,17 +224,6 @@ function App() {
         </select>
         </div>
         </div>
-        <div className="card-body">
-        <div className="input-group input-group-sm mb-3">
-          <span className="input-group-text" id="basic-addon1">Familia</span>
-          <input type="number" className="form-control" 
-                  onChange={(event)=>{
-                    setFamilia(event.target.value);
-                  }}
-          placeholder="Articulo" aria-describedby="basic-addon1"/>
-        </div>
-        </div>
-        
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Fecha Alta</span>
