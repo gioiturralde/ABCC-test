@@ -30,6 +30,8 @@ app.post("/create", (req, res)=>{
 
 });
 
+
+
 app.get("/articulos", (req, res)=>{
 
     db.query('SELECT * FROM articulos',
@@ -44,6 +46,16 @@ app.get("/articulos", (req, res)=>{
     
 
 });
+
+app.get('/departamentos', (req, res) => {
+    db.query('SELECT * FROM departamentos', (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    });
+  });
 
 app.listen(3001, () => {
     console.log("Corriendo en el puerto 3001")
