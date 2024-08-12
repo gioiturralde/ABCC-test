@@ -19,11 +19,11 @@ function App() {
   const[departamento,setDepartamento] = useState("");
   const[clase,setClase] = useState("");
   const[familia,setFamilia] = useState("");
-  const[fechaalta,setFechaAlta] = useState(dateString);
+  const[fechaalta,setFechaAlta] = useState(getCurrentDate());
   const[stock,setStock] = useState("");
   const[cantidad,setCantidad] = useState("");
   const[descontinuado,setDescontinuado] = useState(0);
-  const[fechabaja,setFechaBaja] = useState("01-01-1900");
+  const[fechabaja,setFechaBaja] = useState("1900-01-01");
 
   //componentes
   const [listaArticulos, setArticulos] = useState([]);
@@ -48,7 +48,7 @@ function App() {
       descontinuado:descontinuado,
       fechabaja:fechabaja
     }).then(()=>{
-      getArticulos();
+      //getArticulos();
       alert("Articulo registrado");
     });
   }
@@ -102,7 +102,7 @@ function App() {
         console.error('Error al obtener familias', error);
       });
   };
-  
+
   useEffect(() => {
     if (departamento) {
       getClases(departamento);
@@ -121,18 +121,29 @@ function App() {
     }
   }, [clase]);
 
+  function getCurrentDate() {
+    const today = new Date();
+    
+    // Obtener año, mes y día
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    // Formatear en YYYY-MM-DD
+    return `${year}-${month}-${day}`;
+  }
   
 //funcion para eliminar articulo
 //funcion para modificar articulo
 
   return (
-    <div class="container">
+    <div className="container">
     <div className="App">
 
 
     </div>
-        <div class="card text-center">
-      <div class="card-header">
+        <div className="card text-center">
+      <div className="card-header">
         ABCC Test
       </div>
       <div className="card-body">
@@ -172,16 +183,16 @@ function App() {
                   onChange={(event)=>{
                     setModelo(event.target.value);
                   }}
-          placeholder="Articulo" aria-describedby="basic-addon1"/>
+          placeholder="Modelo" aria-describedby="basic-addon1"/>
         </div>
         </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
-        <label className="input-group-text" for="inputGroupSelect01">Departamento</label>
+        <label className="input-group-text">Departamento</label>
           <select className="form-select" id="inputGroupSelect01"
           onChange={(event) => setDepartamento(event.target.value)}
             aria-describedby="basic-addon1">
-            <option selected></option>
+            <option></option>
             {listaDepartamentos.map(departamentos => (
             <option key={departamentos.id} value={departamentos.id}>
             {departamentos.id} - {departamentos.nombre}
@@ -197,6 +208,8 @@ function App() {
             className="form-select"
             onChange={(event) => setClase(event.target.value)}
             value={clase}
+
+
             disabled={!departamento}>
             <option value="" ></option>
             {listaClases.map(clase => (
@@ -205,6 +218,7 @@ function App() {
               </option>
             ))}
           </select>
+
         </div>
         </div>
         <div className="card-body">
@@ -224,6 +238,7 @@ function App() {
         </select>
         </div>
         </div>
+        
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Fecha Alta</span>
@@ -237,7 +252,7 @@ function App() {
                   onChange={(event)=>{
                     setStock(event.target.value);
                   }}
-          placeholder="Articulo" aria-describedby="basic-addon1"/>
+          placeholder="Stock" aria-describedby="basic-addon1"/>
         </div>
         </div>
         <div className="card-body">
@@ -247,13 +262,13 @@ function App() {
                   onChange={(event)=>{
                     setCantidad(event.target.value);
                   }}
-          placeholder="Articulo" aria-describedby="basic-addon1"/>
+          placeholder="Cantidad" aria-describedby="basic-addon1"/>
         </div>
         </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Descontinuado</span>
-          <input type="text" className="form-control" placeholder="Articulo" aria-describedby="basic-addon1" disabled/>
+          <input type="number" className="form-control" placeholder="0" aria-describedby="basic-addon1" disabled/>
         </div>
         </div>
         <div className="card-body">
@@ -263,7 +278,7 @@ function App() {
         </div>
         </div>
         <button className='btn btn-success' onClick={agregar}>Registrar</button>
-        <div class="lista">
+        <div className="lista">
       <button className="btn btn-outline-primary"
        onClick={getArticulos}>Consultar</button>
       {
