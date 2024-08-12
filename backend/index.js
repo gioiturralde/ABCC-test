@@ -50,9 +50,33 @@ app.get("/articulos", (req, res)=>{
 app.get('/departamentos', (req, res) => {
     db.query('SELECT * FROM departamentos', (err, result) => {
       if (err) {
-        console.log(err);
+        console.log("Error al obtener clases" , err);
       } else {
         res.send(result);
+      }
+    });
+  });
+
+  app.get('/clases', (req, res) => {
+    const departamentoId = req.query.departamento_id;
+    db.query('SELECT * FROM clases WHERE departamento_id = ?', [departamentoId], (err, results) => {
+      if (err) {
+        console.error('Error al obtener clases', err);
+        res.status(500).send('Error al obtener clases');
+      } else {
+        res.json(results);
+      }
+    });
+  });
+
+  app.get('/familias', (req, res) => {
+    const claseId = req.query.clase_id;
+    db.query('SELECT * FROM familias WHERE clase_id = ?', [claseId], (err, results) => {
+      if (err) {
+        console.error('Error al obtener familias', err);
+        res.status(500).send('Error al obtener familias');
+      } else {
+        res.json(results);
       }
     });
   });
