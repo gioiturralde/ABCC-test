@@ -1,0 +1,38 @@
+CREATE DATABASE Tienda
+-- Crear tabla departamentos
+CREATE TABLE departamentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
+-- Crear tabla clases
+CREATE TABLE clases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    departamento_id INT,
+    FOREIGN KEY (departamento_id) REFERENCES departamentos(id)
+);
+
+-- Crear tabla familias
+CREATE TABLE familias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    clase_id INT,
+    FOREIGN KEY (clase_id) REFERENCES clases(id)
+);
+
+-- Crear tabla articulos
+CREATE TABLE articulos (
+    sku CHAR(6) PRIMARY KEY,
+    articulo VARCHAR(15),
+    marca VARCHAR(15),
+    modelo VARCHAR(20),
+    departamento CHAR(1),
+    clase CHAR(2),
+    familia CHAR(3),
+    fecha_alta DATE,
+    stock CHAR(9),
+    cantidad CHAR(9),
+    descontinuado CHAR(1),
+    fecha_baja DATE
+);

@@ -5,7 +5,7 @@ const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
-
+console.log("holahola")
 const db = mysql.createConnection({
     host:"localhost",
     user:"root",
@@ -13,15 +13,17 @@ const db = mysql.createConnection({
     database:"Tienda"
 });
 
-app.post("/create", (req, res)=>{
-    const { sku, articulo, marca, modelo, departamento, clase, familia, fecha_alta, stock, 
-        cantidad, descontinuado, fecha_baja } = req.body;
 
-    db.query('INSERT INTO articulos (sku, articulo, marca, modelo, departamento, clase, familia, fecha_alta, stock, cantidad, descontinuado, fecha_baja) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',[sku, articulo, marca, modelo, departamento, clase, familia, fecha_alta, stock, cantidad, descontinuado, fecha_baja],
+app.post("/create", (req, res)=>{
+    const { sku, articulo, marca, modelo, departamento, clase, familia, fechaalta, stock, 
+        cantidad, descontinuado, fechabaja } = req.body;
+
+    db.query('INSERT INTO articulos (sku, articulo, marca, modelo, departamento, clase, familia, fecha_alta, stock, cantidad, descontinuado, fecha_baja) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',[sku, articulo, marca, modelo, departamento, clase, familia, fechaalta, stock, cantidad, descontinuado, fechabaja],
         (err, result)=>{
             if(err){
                 console.log(err);
             }else{
+
                 res.send("Articulo registrado");
             }
         }
@@ -40,6 +42,7 @@ app.get("/articulos", (req, res)=>{
                 console.log(err);
             }else{
                 res.send(result);
+
             }
         }
     );
@@ -81,6 +84,8 @@ app.get('/departamentos', (req, res) => {
     });
   });
 
-app.listen(3001, () => {
+
+app.listen(3001, (req) => {
     console.log("Corriendo en el puerto 3001")
+
 })
