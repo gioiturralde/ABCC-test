@@ -2,10 +2,10 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
+const moment = require('moment');
 
 app.use(cors());
 app.use(express.json());
-console.log("holahola")
 const db = mysql.createConnection({
     host:"localhost",
     user:"root",
@@ -32,23 +32,59 @@ app.post("/create", (req, res)=>{
 
 });
 
+app.put("/update", (req, res)=>{
+  const { sku, articulo, marca, modelo, departamento, clase, familia, fechaalta, stock, 
+      cantidad, descontinuado, fechabaja } = req.body;
 
+      //pendiente fecha alta y de baja
+  db.query('UPDATE articulos SET articulo=?, marca=?, modelo=?, departamento=?, clase=?, familia=?, stock=?, cantidad=?, descontinuado=? WHERE sku=?',[articulo, marca, modelo, departamento, clase, familia, stock, cantidad, descontinuado, sku],
+      (err, result)=>{
+          if(err){
+              console.log(err);
+          }else{
 
-app.get("/articulos", (req, res)=>{
+              res.send("empleado actualizado");
+          }
+      }
+  );
+  
 
+});
+
+app.get("/articulo", (req, res)=>{
+
+  const sku =req.body.value;
     db.query('SELECT * FROM articulos',
         (err, result)=>{
             if(err){
                 console.log(err);
             }else{
+              //console.log(sku);
                 res.send(result);
 
             }
         }
     );
+
+    app.get('/articulo/:sku', (req, res) => {
+      const { sku } = req.params;
+      db.query('SELECT * FROM articulos WHERE sku = ?', [sku], (err, result) => {
+        if (err) {
+          console.error('Error al obtener el artículo', err);
+          res.status(500).send('Error al obtener el artículo');
+        } else if (result.length > 0) {
+          result[0].fecha_alta = moment(result[0].fecha_alta).format('YYYY-MM-DD');
+          result[0].fecha_baja = moment(result[0].fecha_baja).format('YYYY-MM-DD');
+          res.json(result[0]);
+        } else {
+          res.status(404).send('Artículo no encontrado');
+        }
+      });
+    });
     
 
 });
+
 
 app.get('/departamentos', (req, res) => {
     db.query('SELECT * FROM departamentos', (err, result) => {
