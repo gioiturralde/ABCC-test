@@ -1,5 +1,5 @@
 import './App.css';
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import Axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -25,9 +25,11 @@ function App() {
   const[descontinuado,setDescontinuado] = useState(0);
   const[fechabaja,setFechaBaja] = useState("1900-01-01");
 
-  //tabla para mostrar registros
+  //componentes
   const [listaArticulos, setArticulos] = useState([]);
   const [listaDepartamentos, setDepartamentos] = useState([]);
+  const [listaClases, setClases] = useState([]);
+  const [listaFamilias, setFamilias] = useState([]);
 
 
 //funcion para agregar articulo
@@ -58,11 +60,70 @@ function App() {
     });
   }
 
+  //obtener departamentos
   const getDepartamentos = ()=>{
     Axios.get("http://localhost:3001/departamentos").then((response)=>{
       setDepartamentos(response.data);
     });
   }
+
+  //obtener clases
+  const getClases = (departamentoId) => {
+    Axios.get(`http://localhost:3001/clases?departamento_id=${departamentoId}`)
+      .then((response) => {
+        setClases(response.data);
+      })
+      .catch((error) => {
+        console.error('Error al obtener clases', error);
+      });
+  };
+
+ 
+  useEffect(() => {
+    getDepartamentos();
+  }, []);
+
+
+  useEffect(() => {
+    if (departamento) {
+      getClases(departamento);
+    } else {
+      setClases([]);
+    }
+  }, [departamento]);
+
+  // Obtener familias basado en la clase seleccionada
+  const getFamilias = (claseId) => {
+    Axios.get(`http://localhost:3001/familias?clase_id=${claseId}`)
+      .then((response) => {
+        setFamilias(response.data);
+      })
+      .catch((error) => {
+        console.error('Error al obtener familias', error);
+      });
+  };
+  
+  // Fetch clases when departamento changes
+  useEffect(() => {
+    if (departamento) {
+      getClases(departamento);
+    } else {
+      setClases([]); // Clear classes if no department is selected
+      setClase(''); // Reset selected class
+      setFamilias([]); // Clear families if no department is selected
+    }
+  }, [departamento]);
+
+  // Fetch familias when clase changes
+  useEffect(() => {
+    if (clase) {
+      getFamilias(clase);
+    } else {
+      setFamilias([]); // Clear families if no class is selected
+    }
+  }, [clase]);
+
+
   
 //funcion para eliminar articulo
 //funcion para modificar articulo
@@ -86,6 +147,7 @@ function App() {
                   }}
           placeholder="SKU" aria-describedby="basic-addon1"/>
         </div>
+        
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Articulo</span>
@@ -118,33 +180,47 @@ function App() {
         </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
-          <span className="input-group-text" id="basic-addon1">Departamento</span>
-          <input type="number" className="form-control" 
-                  onChange={(event)=>{
-                    setDepartamento(event.target.value);
-                  }}
-          placeholder="Articulo" aria-describedby="basic-addon1"/>
-        </div>
-        </div>
-        <div class="input-group mb-3">
-        <label class="input-group-text" for="inputGroupSelect01">Departamento</label>
-          <select class="form-select" id="inputGroupSelect01">
-            <option selected>Choose...</option>
-            {listaDepartamentos.map(departamento => (
-            <option key={departamento.id} value={departamento.id}>
-            {departamento.id} - {departamento.nombre}
+        <label className="input-group-text" for="inputGroupSelect01">Departamento</label>
+          <select className="form-select" id="inputGroupSelect01"
+          onChange={(event) => setDepartamento(event.target.value)}
+            aria-describedby="basic-addon1">
+            <option selected></option>
+            {listaDepartamentos.map(departamentos => (
+            <option key={departamentos.id} value={departamentos.id}>
+            {departamentos.id} - {departamentos.nombre}
           </option>
         ))}
           </select>
         </div>
+        </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
-          <span className="input-group-text" id="basic-addon1">Clase</span>
-          <input type="number" className="form-control" 
-                  onChange={(event)=>{
-                    setClase(event.target.value);
-                  }}
-          placeholder="Articulo" aria-describedby="basic-addon1"/>
+          <label className="input-group-text">Clase</label>
+          <select
+            className="form-select"
+            disabled={!departamento}>
+            <option value="" ></option>
+            {listaClases.map(clase => (
+              <option key={clase.id} value={clase.id}>
+                {clase.id} - {clase.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+        </div>
+        <div className="card-body">
+        <div className="input-group input-group-sm mb-3">
+          <label className="input-group-text" id="basic-addon1">Familia</label>
+          <select
+          className="form-select"
+          disabled={!clase}>
+          <option value=""></option>
+          {listaFamilias.map(familia => (
+            <option key={familia.id} value={familia.id}>
+              {familia.id} - {familia.nombre}
+            </option>
+          ))}
+        </select>
         </div>
         </div>
         <div className="card-body">
@@ -157,6 +233,7 @@ function App() {
           placeholder="Articulo" aria-describedby="basic-addon1"/>
         </div>
         </div>
+        
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Fecha Alta</span>
@@ -209,6 +286,6 @@ function App() {
     </div>
     </div>
   );
-}
+};
 
 export default App;
