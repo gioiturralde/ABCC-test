@@ -122,13 +122,13 @@ app.put('/update/:sku', (req, res) => {
     familia,
     stock,
     cantidad,
-    descontinuado
+    descontinuado,
+    fechabaja
   } = req.body;
   const { sku } = req.params;
+  const query = `CALL ActualizarArticulo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-  const query = `CALL ActualizarArticulo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-  db.query(query, [sku, articulo, marca, modelo, departamento, clase, familia, stock, cantidad, descontinuado], (err, result) => {
+  db.query(query, [sku, articulo, marca, modelo, departamento, clase, familia, stock, cantidad, descontinuado, fechabaja], (err, result) => {
     if (err) {
       console.error('Error al actualizar el artículo', err);
       res.status(500).send('Error al actualizar el artículo');

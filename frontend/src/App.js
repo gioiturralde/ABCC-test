@@ -27,7 +27,6 @@ function App() {
   const [esDescontinuado, setesDescontinuado] = useState(true);
 
 
-  const [listaArticulos, setArticulos] = useState("");
   const [listaDepartamentos, setDepartamentos] = useState([]);
   const [listaClases, setClases] = useState([]);
   const [listaFamilias, setFamilias] = useState([]);
@@ -69,12 +68,13 @@ function App() {
     });
   }
 
+
   const update = (event)=>{
     event.preventDefault();
     if (parseInt(cantidad) > parseInt(stock)) {
       alert('La cantidad ingresada no puede ser mayor al stock disponible.');
       return;
-    }
+    } 
     Axios.put(`http://localhost:3001/update/${sku}`, {
       articulo:articulo,
       marca:marca,
@@ -122,6 +122,8 @@ const consultar = () => {
             });
         } else {
           alert('El SKU no existe. Por favor, regístrelo antes de consultar.');
+          limpiarCampos();
+          setDescontinuado(0);
           setIsReadOnly(false);
         }
       })
@@ -145,6 +147,7 @@ const consultar = () => {
     setSku("");
     setDescontinuado(0);
     setIsReadOnly(true);
+    setesDescontinuado(true);
     setEditar(false);
   }
 
@@ -243,8 +246,9 @@ const editarArticulo = ()=>{
   setIsReadOnly(false);
 }
 
+
   return (
-    <div className="container">
+    <div className="container-fluid">
         <div className="card text-center">
       <div className="card-header">
         ABCC Test
@@ -383,9 +387,11 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Descontinuado</span>
-          <input type="number" readOnly={isReadOnly} className="form-control" value={descontinuado} 
+          <input type="number" readOnly={esDescontinuado} className="form-control" value={descontinuado} 
                             onChange={(event)=>{
-                              setDescontinuado(event.target.value);
+                              var inputValue = event.target.value;
+                                  event.target.value = inputValue.slice(0, 1).replace(/[^01]/g, '');
+                                              setDescontinuado(event.target.value);
                             }}
           
            aria-describedby="basic-addon1" />

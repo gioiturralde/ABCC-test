@@ -31,7 +31,8 @@ CREATE PROCEDURE `ActualizarArticulo`(
     IN p_familia CHAR(3),
     IN p_stock INT,
     IN p_cantidad INT,
-    IN p_descontinuado CHAR(1)
+    IN p_descontinuado CHAR(1),
+    IN p_fecha_baja DATE
 )
 BEGIN
     UPDATE articulos
@@ -44,7 +45,8 @@ BEGIN
         familia = p_familia,
         stock = p_stock,
         cantidad = p_cantidad,
-        descontinuado = p_descontinuado
+        descontinuado = p_descontinuado,
+        fecha_baja = p_fecha_baja
     WHERE sku = p_sku;
 END//
 DELIMITER ;
@@ -68,9 +70,13 @@ CREATE TABLE IF NOT EXISTS `articulos` (
 
 -- Volcando datos para la tabla tienda.articulos: ~2 rows (aproximadamente)
 INSERT INTO `articulos` (`sku`, `articulo`, `marca`, `modelo`, `departamento`, `clase`, `familia`, `fecha_alta`, `stock`, `cantidad`, `descontinuado`, `fecha_baja`) VALUES
-	('1', 'tele', 'tele', '15', '2', '5', '10', '2024-08-12', '4', '4', '1', '2024-08-12'),
-	('3', 'pantalla', 'eeee', 'eeee', '3', '7', '18', '2024-08-12', '4', '2', '0', '1900-01-01'),
-	('4', 'radio', 'lg', '1414', '1', '1', '1', '2024-08-12', '4', '3', '0', '1900-01-01');
+	('1', 'batidora', 'bd', '111', '1', '3', '7', '2024-08-12', '5', '5', '1', '2024-08-12'),
+	('2', 'pantalla', 'hisense', '2021', '2', '5', '10', '2024-08-13', '10', '1', '1', '2024-08-13'),
+	('3', 'smartTV', 'sony', '1551', '2', '5', '10', '2024-08-12', '4', '4', '1', '2024-08-13'),
+	('4', 'radio', 'lg', '1414', '1', '1', '1', '2024-08-12', '4', '3', '0', '1900-01-01'),
+	('5', 'escaladora', 'walker', '2024', '1', '2', '2', '2024-08-13', '7', '4', '1', '2024-08-13'),
+	('6', 'iphone 14', 'apple', '2022', '2', '6', '17', '2024-08-13', '5', '5', '1', '2024-08-13'),
+	('8', 'bocina', 'alux', '5454', '3', '7', '18', '2024-08-13', '8', '4', '0', '1900-01-01');
 
 -- Volcando estructura para tabla tienda.clases
 CREATE TABLE IF NOT EXISTS `clases` (
