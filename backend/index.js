@@ -14,6 +14,8 @@ const db = mysql.createConnection({
 });
 
 
+/*
+insertar
 app.post("/create", (req, res)=>{
     const { sku, articulo, marca, modelo, departamento, clase, familia, fechaalta, stock, 
         cantidad, descontinuado, fechabaja } = req.body;
@@ -30,7 +32,36 @@ app.post("/create", (req, res)=>{
     );
     
 
+});*/
+//procedimiento almacenado insertar
+app.post("/create", (req, res) => {
+  const {
+      sku,
+      articulo,
+      marca,
+      modelo,
+      departamento,
+      clase,
+      familia,
+      fechaalta,
+      stock,
+      cantidad,
+      descontinuado,
+      fechabaja
+  } = req.body;
+
+  const query = `CALL InsertarArticulo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(query, [sku, articulo, marca, modelo, departamento, clase, familia, fechaalta, stock, cantidad, descontinuado, fechabaja], (err, result) => {
+      if (err) {
+          console.error("Error al insertar el artículo", err);
+          res.status(500).send("Error al insertar el artículo");
+      } else {
+          res.send("Artículo insertado con éxito");
+      }
+  });
 });
+
 
 app.delete("/delete/:sku", (req, res)=>{
   const { sku } = req.params;
@@ -73,7 +104,7 @@ app.get("/articulo", (req, res)=>{
             if(err){
                 console.log(err);
             }else{
-              //console.log(sku);
+
                 res.send(result);
 
             }

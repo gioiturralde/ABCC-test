@@ -4,7 +4,7 @@ funcion modificar #check
 //Funcion eliminar #check
 //Mostrar consulta en los campos de texto #check
 //verificar lo del stock #check
-iniciar pidiendo sku
+iniciar pidiendo sku #check
 actualizar baja cuando se descontinue un producto
 procedimientos almacenados en la bd
 guardar base de datos
@@ -64,7 +64,6 @@ function App() {
       alert('La cantidad ingresada no puede ser mayor al stock disponible.');
       return;
     }
-    
     Axios.post("http://localhost:3001/create", {
       sku:sku,
       articulo:articulo,
@@ -79,13 +78,17 @@ function App() {
       descontinuado:descontinuado,
       fechabaja:fechabaja
     }).then(()=>{
-      //getArticulos();
       limpiarCampos();
       alert("Articulo registrado");
     });
   }
 
-  const update = ()=>{
+  const update = (event)=>{
+    event.preventDefault();
+    if (parseInt(cantidad) > parseInt(stock)) {
+      alert('La cantidad ingresada no puede ser mayor al stock disponible.');
+      return;
+    }
     Axios.put(`http://localhost:3001/update/${sku}`, {
       articulo:articulo,
       marca:marca,
@@ -125,7 +128,7 @@ const consultar = () => {
               setFechaAlta(articulo.fecha_alta);
               setFechaBaja(articulo.fecha_baja);
               setDescontinuado(articulo.descontinuado);
-              setIsReadOnly(true);
+              setIsReadOnly(false);
               setesDescontinuado(true);
             })
             .catch((error) => {
@@ -152,8 +155,8 @@ const consultar = () => {
     setStock("");
     setFechaAlta(fechaActual);
     setFechaBaja(fechaDeBaja);
-    setDescontinuado("");
-    setSku("")
+    setSku("");
+    setDescontinuado(0);
     setIsReadOnly(false);
     setEditar(false);
   }
@@ -282,7 +285,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Articulo</span>
-          <input type="text" readOnly={isReadOnly} className="form-control" value={articulo}
+          <input type="text" className="form-control" value={articulo}
                   onChange={(event)=>{
                     setArticulo(event.target.value);
                   }}
@@ -292,7 +295,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Marca</span>
-          <input type="text" readOnly={isReadOnly} className="form-control" value={marca}
+          <input type="text" className="form-control" value={marca}
                   onChange={(event)=>{
                     setMarca(event.target.value);
                   }}
@@ -302,7 +305,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Modelo</span>
-          <input type="text" readOnly={isReadOnly} className="form-control" value={modelo}
+          <input type="text" className="form-control" value={modelo}
                   onChange={(event)=>{
                     setModelo(event.target.value);
                   }}
@@ -367,13 +370,13 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Fecha Alta</span>
-          <input type="date" readOnly={isReadOnly} className="form-control" value={fechaalta} aria-describedby="basic-addon1" disabled/>
+          <input type="date" className="form-control" value={fechaalta} aria-describedby="basic-addon1" disabled/>
         </div>
         </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Stock</span>
-          <input type="number" readOnly={isReadOnly} className="form-control" value={stock}
+          <input type="number" className="form-control" value={stock}
                   onChange={(event)=>{
                     setStock(event.target.value);
                   }}
@@ -383,7 +386,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Cantidad</span>
-          <input type="number" readOnly={isReadOnly} className="form-control" value={cantidad}
+          <input type="number" className="form-control" value={cantidad}
                   onChange={(event)=>{
                     setCantidad(event.target.value);
                   }}
@@ -393,7 +396,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Descontinuado</span>
-          <input type="number" readOnly={esDescontinuado} className="form-control" value={descontinuado} 
+          <input type="number" className="form-control" value={descontinuado} 
                             onChange={(event)=>{
                               setDescontinuado(event.target.value);
                             }}
@@ -404,7 +407,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Fecha Baja</span>
-          <input type="date" readOnly={isReadOnly} className="form-control" value={fechabaja} placeholder="Articulo" aria-describedby="basic-addon1" disabled/>
+          <input type="date" className="form-control" value={fechabaja} placeholder="Articulo" aria-describedby="basic-addon1" disabled/>
         </div>
         </div>
         {
@@ -416,6 +419,9 @@ const editarArticulo = ()=>{
           : <div><button className='btn btn-primary m-2' onClick={agregar}>Registrar</button>
             <button type="button" onClick={limpiarCampos} className="btn btn-danger">Limpiar</button></div>
         }
+        <div>
+          <p>{fechabaja + " ---descontinuado? " + descontinuado}</p>
+        </div>
       </div>
     </div>
     </div>
