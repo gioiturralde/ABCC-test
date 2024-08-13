@@ -3,7 +3,7 @@
 funcion modificar #check
 //Funcion eliminar #check
 //Mostrar consulta en los campos de texto #check
-//verificar lo del stock 
+//verificar lo del stock #check
 iniciar pidiendo sku
 actualizar baja cuando se descontinue un producto
 procedimientos almacenados en la bd
@@ -106,30 +106,40 @@ function App() {
   }
 
 //funcion para mostrar articulos
-  const handleBuscar = () => {
-    if (sku) {
-      Axios.get(`http://localhost:3001/articulo/${sku}`)
-        .then((response) => {
-          setArticulos(response.data);
-          setArticulo(listaArticulos.articulo);
-          setMarca(listaArticulos.marca);
-          setModelo(listaArticulos.modelo);
-          setDepartamento(listaArticulos.departamento);
-          setClase(listaArticulos.clase);
-          setFamilia(listaArticulos.familia);
-          setStock(listaArticulos.stock);
-          setCantidad(listaArticulos.cantidad);
-          setFechaAlta(listaArticulos.fecha_alta);
-          setFechaBaja(listaArticulos.fecha_baja);
-          setDescontinuado(listaArticulos.descontinuado);
-          setIsReadOnly(true);
-          setesDescontinuado(true);
-        })
-        .catch((error) => {
-          console.error('Error al obtener el artículo', error);
-        });
-    }
-  };
+const consultar = () => {
+  if (sku) {
+    Axios.get(`http://localhost:3001/articulo/exists/${sku}`)
+      .then((response) => {
+        if (response.data.exists) {
+          Axios.get(`http://localhost:3001/articulo/${sku}`)
+            .then((response) => {
+              const articulo = response.data;
+              setArticulo(articulo.articulo);
+              setMarca(articulo.marca);
+              setModelo(articulo.modelo);
+              setDepartamento(articulo.departamento);
+              setClase(articulo.clase);
+              setFamilia(articulo.familia);
+              setStock(articulo.stock);
+              setCantidad(articulo.cantidad);
+              setFechaAlta(articulo.fecha_alta);
+              setFechaBaja(articulo.fecha_baja);
+              setDescontinuado(articulo.descontinuado);
+              setIsReadOnly(true);
+              setesDescontinuado(true);
+            })
+            .catch((error) => {
+              console.error('Error al obtener el artículo', error);
+            });
+        } else {
+          alert('El SKU no existe. Por favor, regístrelo antes de consultar.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al verificar el SKU', error);
+      });
+  }
+};
 
   const limpiarCampos = ()=>{
     setArticulo("");
@@ -246,7 +256,6 @@ const editarArticulo = ()=>{
   return (
     <div className="container">
         <div className="card text-center">
-        <button type="button" onClick={limpiarCampos} className="btn btn-danger">Limpiar</button>
       <div className="card-header">
         ABCC Test
       </div>
@@ -260,7 +269,7 @@ const editarArticulo = ()=>{
           placeholder="Ingrese SKU" aria-describedby="basic-addon1"/>
           <div class="btn-group" role="group" aria-label="Basic mixed styles example">
             <button type="button" 
-                onClick={handleBuscar}
+                onClick={consultar}
             className="btn btn-success ml-2">Consultar</button>
             <button type="button" 
               onClick={editarArticulo}
@@ -404,7 +413,8 @@ const editarArticulo = ()=>{
           <button className='btn btn-warning m-2' onClick={update}>Actualizar</button> 
           <button className='btn btn-success m-2' onClick={limpiarCampos}>Cancelar</button>
           </div>
-          : <button className='btn btn-primary' onClick={agregar}>Registrar</button>
+          : <div><button className='btn btn-primary m-2' onClick={agregar}>Registrar</button>
+            <button type="button" onClick={limpiarCampos} className="btn btn-danger">Limpiar</button></div>
         }
       </div>
     </div>

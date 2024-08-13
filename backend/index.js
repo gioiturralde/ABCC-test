@@ -134,6 +134,20 @@ app.get('/departamentos', (req, res) => {
     });
   });
 
+  //verificar si existe el SKU
+  app.get('/articulo/exists/:sku', (req, res) => {
+    const sku = req.params.sku;
+    const sqlCheck = 'SELECT COUNT(*) AS count FROM articulos WHERE sku = ?';
+    db.query(sqlCheck, [sku], (err, result) => {
+      if (err) {
+        console.error('Error al verificar el SKU', err);
+        res.status(500).send('Error al verificar el SKU');
+      } else {
+        const count = result[0].count;
+        res.json({ exists: count > 0 });
+      }
+    });
+  });
 
 app.listen(3001, (req) => {
     console.log("Corriendo en el puerto 3001")
