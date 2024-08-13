@@ -1,8 +1,9 @@
 /*
 //TODO
-//Funcion eliminar y modificar
-//Mostrar consulta en los campos de texto $check
-//verificar lo del stock
+funcion modificar #check
+//Funcion eliminar #check
+//Mostrar consulta en los campos de texto #check
+//verificar lo del stock 
 iniciar pidiendo sku
 actualizar baja cuando se descontinue un producto
 procedimientos almacenados en la bd
@@ -17,11 +18,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 
 function App() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const dateString = `${year}-${month}-${day}`;
   const fechaDeBaja = "1900-01-01";
   const fechaActual = getCurrentDate();
   //constantes que capturan el input
@@ -62,7 +58,13 @@ function App() {
   
 
 //funcion para agregar articulo
-  const agregar = ()=>{
+  const agregar = (event)=>{
+    event.preventDefault();
+    if (parseInt(cantidad) > parseInt(stock)) {
+      alert('La cantidad ingresada no puede ser mayor al stock disponible.');
+      return;
+    }
+    
     Axios.post("http://localhost:3001/create", {
       sku:sku,
       articulo:articulo,
@@ -104,13 +106,6 @@ function App() {
   }
 
 //funcion para mostrar articulos
-  const getArticulo = ()=>{
-    Axios.get("http://localhost:3001/articulo/${sku}").then((response)=>{
-      setArticulos([response.data]);
-
-    });
-  }
-
   const handleBuscar = () => {
     if (sku) {
       Axios.get(`http://localhost:3001/articulo/${sku}`)
@@ -128,10 +123,10 @@ function App() {
           setFechaBaja(listaArticulos.fecha_baja);
           setDescontinuado(listaArticulos.descontinuado);
           setIsReadOnly(true);
+          setesDescontinuado(true);
         })
         .catch((error) => {
           console.error('Error al obtener el artículo', error);
-          // Puedes manejar el error aquí si lo deseas, por ejemplo, mostrando un mensaje al usuario
         });
     }
   };
@@ -216,8 +211,22 @@ function App() {
 
 
 //funcion para eliminar articulo
-//funcion para modificar articulo
+const eliminar = () => {
+  if (sku) {
+    const isConfirmed = window.confirm('¿Estás seguro de que deseas eliminar este artículo?');
+    if (isConfirmed) {
+    Axios.delete(`http://localhost:3001/delete/${sku}`).then((response) => {
+      alert('Artículo eliminado exitosamente');
+      limpiarCampos();
+      })
+      .catch((error) => {
+        console.error('Error al obtener el artículo', error);
+      });
+    }
+  }
+};
 
+//funcion para modificar articulo
 const editarArticulo = ()=>{
   setEditar(true);
 
@@ -231,6 +240,7 @@ const editarArticulo = ()=>{
   setStock(listaArticulos.stock);
   setDescontinuado(listaArticulos.descontinuado);
   setesDescontinuado(false);
+  setIsReadOnly(false);
 }
 
   return (
@@ -243,7 +253,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">SKU</span>
-          <input type="number" readOnly={isReadOnly} className="form-control" value={sku}
+          <input type="number" className="form-control" value={sku}
                   onChange={(event)=>{
                     setSku(event.target.value);
                   }}
@@ -255,7 +265,9 @@ const editarArticulo = ()=>{
             <button type="button" 
               onClick={editarArticulo}
             className="btn btn-warning">Actualizar</button>
-            <button type="button" className="btn btn-danger">Eliminar</button>
+            <button type="button" 
+              onClick={eliminar}
+            className="btn btn-danger">Eliminar</button>
         </div>
         </div>
         <div className="card-body">
@@ -372,7 +384,12 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Descontinuado</span>
-          <input type="number" readOnly={isReadOnly} className="form-control" value={descontinuado} placeholder="0" aria-describedby="basic-addon1" disabled={esDescontinuado}/>
+          <input type="number" readOnly={esDescontinuado} className="form-control" value={descontinuado} 
+                            onChange={(event)=>{
+                              setDescontinuado(event.target.value);
+                            }}
+          
+          placeholder="0" aria-describedby="basic-addon1" />
         </div>
         </div>
         <div className="card-body">

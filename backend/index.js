@@ -32,11 +32,25 @@ app.post("/create", (req, res)=>{
 
 });
 
+app.delete("/delete/:sku", (req, res)=>{
+  const { sku } = req.params;
+  db.query('DELETE FROM articulos WHERE sku=?',[sku], 
+      (err, result)=>{
+          if(err){
+              console.log(err);
+          }else{
+              res.send("empleado eliminado");
+          }
+      }
+  );
+  
+
+});
+
 app.put("/update/:sku", (req, res)=>{
   const { articulo, marca, modelo, departamento, clase, familia, stock, 
       cantidad, descontinuado } = req.body;
   const { sku } = req.params;
-      //pendiente fecha alta y de baja
   db.query('UPDATE articulos SET articulo=?, marca=?, modelo=?, departamento=?, clase=?, familia=?, stock=?, cantidad=?, descontinuado=? WHERE sku=?',[articulo, marca, modelo, departamento, clase, familia, stock, cantidad, descontinuado, sku],
       (err, result)=>{
           if(err){
