@@ -23,7 +23,7 @@ function App() {
   const[fechabaja,setFechaBaja] = useState(fechaDeBaja);
 
   const[editar, setEditar] = useState(false);
-  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(true);
   const [esDescontinuado, setesDescontinuado] = useState(true);
 
 
@@ -114,7 +114,7 @@ const consultar = () => {
               setFechaAlta(articulo.fecha_alta);
               setFechaBaja(articulo.fecha_baja);
               setDescontinuado(articulo.descontinuado);
-              setIsReadOnly(false);
+              setIsReadOnly(true);
               setesDescontinuado(true);
             })
             .catch((error) => {
@@ -122,6 +122,7 @@ const consultar = () => {
             });
         } else {
           alert('El SKU no existe. Por favor, regístrelo antes de consultar.');
+          setIsReadOnly(false);
         }
       })
       .catch((error) => {
@@ -143,7 +144,7 @@ const consultar = () => {
     setFechaBaja(fechaDeBaja);
     setSku("");
     setDescontinuado(0);
-    setIsReadOnly(false);
+    setIsReadOnly(true);
     setEditar(false);
   }
 
@@ -229,15 +230,15 @@ const eliminar = () => {
 const editarArticulo = ()=>{
   setEditar(true);
 
-  setArticulo(listaArticulos.articulo);
-  setMarca(listaArticulos.marca);
-  setModelo(listaArticulos.modelo);
-  setDepartamento(listaArticulos.departamento);
-  setClase(listaArticulos.clase);
-  setFamilia(listaArticulos.familia);
-  setCantidad(listaArticulos.cantidad);
-  setStock(listaArticulos.stock);
-  setDescontinuado(listaArticulos.descontinuado);
+  setArticulo(articulo);
+  setMarca(marca);
+  setModelo(modelo);
+  setDepartamento(departamento);
+  setClase(clase);
+  setFamilia(familia);
+  setCantidad(cantidad);
+  setStock(stock);
+  setDescontinuado(descontinuado);
   setesDescontinuado(false);
   setIsReadOnly(false);
 }
@@ -271,7 +272,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Articulo</span>
-          <input type="text" className="form-control" value={articulo}
+          <input type="text" readOnly={isReadOnly} className="form-control" value={articulo}
                   onChange={(event)=>{
                     setArticulo(event.target.value);
                   }}
@@ -281,7 +282,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Marca</span>
-          <input type="text" className="form-control" value={marca}
+          <input type="text" readOnly={isReadOnly} className="form-control" value={marca}
                   onChange={(event)=>{
                     setMarca(event.target.value);
                   }}
@@ -291,7 +292,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Modelo</span>
-          <input type="text" className="form-control" value={modelo}
+          <input type="text" readOnly={isReadOnly} className="form-control" value={modelo}
                   onChange={(event)=>{
                     setModelo(event.target.value);
                   }}
@@ -318,7 +319,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <label className="input-group-text">Clase</label>
-          <select 
+          <select
             className="form-select"
             onChange={(event) => setClase(event.target.value)}
             value={clase}
@@ -362,7 +363,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Stock</span>
-          <input type="number" className="form-control" value={stock}
+          <input type="number" readOnly={isReadOnly} className="form-control" value={stock}
                   onChange={(event)=>{
                     setStock(event.target.value);
                   }}
@@ -372,7 +373,7 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Cantidad</span>
-          <input type="number" className="form-control" value={cantidad}
+          <input type="number" readOnly={isReadOnly} className="form-control" value={cantidad}
                   onChange={(event)=>{
                     setCantidad(event.target.value);
                   }}
@@ -382,12 +383,12 @@ const editarArticulo = ()=>{
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Descontinuado</span>
-          <input type="number" className="form-control" value={descontinuado} 
+          <input type="number" readOnly={isReadOnly} className="form-control" value={descontinuado} 
                             onChange={(event)=>{
                               setDescontinuado(event.target.value);
                             }}
           
-          placeholder="0" aria-describedby="basic-addon1" />
+           aria-describedby="basic-addon1" />
         </div>
         </div>
         <div className="card-body">
