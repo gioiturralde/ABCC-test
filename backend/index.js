@@ -63,7 +63,7 @@ app.post("/create", (req, res) => {
 });
 
 
-app.delete("/delete/:sku", (req, res)=>{
+/*app.delete("/delete/:sku", (req, res)=>{
   const { sku } = req.params;
   db.query('DELETE FROM articulos WHERE sku=?',[sku], 
       (err, result)=>{
@@ -76,7 +76,25 @@ app.delete("/delete/:sku", (req, res)=>{
   );
   
 
+});*/
+
+// procedimiento almacenado para eliminar
+app.delete('/delete/:sku', (req, res) => {
+  const { sku } = req.params;
+
+  const query = `CALL EliminarArticulo(?)`;
+
+  db.query(query, [sku], (err, result) => {
+    if (err) {
+      console.error('Error al eliminar el artículo', err);
+      res.status(500).send('Error al eliminar el artículo');
+    } else {
+      res.send('Artículo eliminado con éxito');
+    }
+  });
 });
+
+/*
 
 app.put("/update/:sku", (req, res)=>{
   const { articulo, marca, modelo, departamento, clase, familia, stock, 
@@ -91,10 +109,35 @@ app.put("/update/:sku", (req, res)=>{
               res.send("empleado actualizado");
           }
       }
-  );
-  
+  );*/
 
+  // procedimiento almacenado actualizar
+app.put('/update/:sku', (req, res) => {
+  const {
+    articulo,
+    marca,
+    modelo,
+    departamento,
+    clase,
+    familia,
+    stock,
+    cantidad,
+    descontinuado
+  } = req.body;
+  const { sku } = req.params;
+
+  const query = `CALL ActualizarArticulo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(query, [sku, articulo, marca, modelo, departamento, clase, familia, stock, cantidad, descontinuado], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar el artículo', err);
+      res.status(500).send('Error al actualizar el artículo');
+    } else {
+      res.send('Artículo actualizado con éxito');
+    }
+  });
 });
+
 
 app.get("/articulo", (req, res)=>{
 
@@ -126,7 +169,29 @@ app.get("/articulo", (req, res)=>{
         }
       });
     });
-    
+
+
+    /*app.get('/articulo/:sku', (req, res) => {
+
+      const { sku } = req.params;
+      console.log(sku);
+      const query = `CALL ConsultarArticulo(?)`;
+      db.query(query, [sku], (err, result) => {
+        if (err) {
+          console.error('Error al obtener el artículo', err);
+          res.status(500).send('Error al obtener el artículo');
+        } else if (result.length > 0) {
+          result[0].fecha_alta = moment(result[0].fecha_alta).format('YYYY-MM-DD');
+          result[0].fecha_baja = moment(result[0].fecha_baja).format('YYYY-MM-DD');
+          res.json(result[0]);
+          console.log(result[0]);
+        } else {
+          res.status(404).send('Artículo no encontrado');
+        }
+      });
+    });*/
+
+
 
 });
 

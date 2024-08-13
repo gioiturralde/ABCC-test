@@ -1,15 +1,3 @@
-/*
-//TODO
-funcion modificar #check
-//Funcion eliminar #check
-//Mostrar consulta en los campos de texto #check
-//verificar lo del stock #check
-iniciar pidiendo sku #check
-actualizar baja cuando se descontinue un producto
-procedimientos almacenados en la bd
-guardar base de datos
-*/
-
 
 import './App.css';
 import {useState, useEffect} from "react";
@@ -38,7 +26,7 @@ function App() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [esDescontinuado, setesDescontinuado] = useState(true);
 
-  //componentes
+
   const [listaArticulos, setArticulos] = useState("");
   const [listaDepartamentos, setDepartamentos] = useState([]);
   const [listaClases, setClases] = useState([]);
@@ -47,12 +35,10 @@ function App() {
   function getCurrentDate() {
     const today = new Date();
     
-    // Obtener año, mes y día
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
-    
-    // Formatear en YYYY-MM-DD
+
     return `${year}-${month}-${day}`;
   }
   
@@ -419,9 +405,6 @@ const editarArticulo = ()=>{
           : <div><button className='btn btn-primary m-2' onClick={agregar}>Registrar</button>
             <button type="button" onClick={limpiarCampos} className="btn btn-danger">Limpiar</button></div>
         }
-        <div>
-          <p>{fechabaja + " ---descontinuado? " + descontinuado}</p>
-        </div>
       </div>
     </div>
     </div>
