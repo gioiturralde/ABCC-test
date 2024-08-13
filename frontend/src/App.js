@@ -39,6 +39,8 @@ function App() {
   const[fechabaja,setFechaBaja] = useState(fechaDeBaja);
 
   const[editar, setEditar] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [esDescontinuado, setesDescontinuado] = useState(true);
 
   //componentes
   const [listaArticulos, setArticulos] = useState("");
@@ -81,6 +83,26 @@ function App() {
     });
   }
 
+  const update = ()=>{
+    Axios.put(`http://localhost:3001/update/${sku}`, {
+      articulo:articulo,
+      marca:marca,
+      modelo:modelo,
+      departamento:departamento,
+      clase:clase,
+      familia:familia,
+      fechaalta:fechaalta,
+      stock:stock,
+      cantidad:cantidad,
+      descontinuado:descontinuado,
+      fechabaja:fechabaja
+    }).then(()=>{
+      //getArticulos();
+      limpiarCampos();
+      alert("Articulo actualizado");
+    });
+  }
+
 //funcion para mostrar articulos
   const getArticulo = ()=>{
     Axios.get("http://localhost:3001/articulo/${sku}").then((response)=>{
@@ -105,6 +127,7 @@ function App() {
           setFechaAlta(listaArticulos.fecha_alta);
           setFechaBaja(listaArticulos.fecha_baja);
           setDescontinuado(listaArticulos.descontinuado);
+          setIsReadOnly(true);
         })
         .catch((error) => {
           console.error('Error al obtener el artículo', error);
@@ -112,6 +135,7 @@ function App() {
         });
     }
   };
+
   const limpiarCampos = ()=>{
     setArticulo("");
     setMarca("");
@@ -125,20 +149,8 @@ function App() {
     setFechaBaja(fechaDeBaja);
     setDescontinuado("");
     setSku("")
-  }
-  const editarArticulo = (val)=>{
-    setEditar(true);
-
-    setArticulo(val.articulo);
-    setMarca(val.marca);
-    setModelo(val.modelo);
-    setDepartamento(val.departamento);
-    setClase(val.clase);
-    setFamilia(val.familia);
-    setCantidad(val.cantidad);
-    setStock(val.stock);
-    setDescontinuado(val.descontinuado);
-    //setSku(val.sku);
+    setIsReadOnly(false);
+    setEditar(false);
   }
 
   //obtener departamentos
@@ -206,6 +218,21 @@ function App() {
 //funcion para eliminar articulo
 //funcion para modificar articulo
 
+const editarArticulo = ()=>{
+  setEditar(true);
+
+  setArticulo(listaArticulos.articulo);
+  setMarca(listaArticulos.marca);
+  setModelo(listaArticulos.modelo);
+  setDepartamento(listaArticulos.departamento);
+  setClase(listaArticulos.clase);
+  setFamilia(listaArticulos.familia);
+  setCantidad(listaArticulos.cantidad);
+  setStock(listaArticulos.stock);
+  setDescontinuado(listaArticulos.descontinuado);
+  setesDescontinuado(false);
+}
+
   return (
     <div className="container">
         <div className="card text-center">
@@ -216,7 +243,7 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">SKU</span>
-          <input type="number" className="form-control" value={sku}
+          <input type="number" readOnly={isReadOnly} className="form-control" value={sku}
                   onChange={(event)=>{
                     setSku(event.target.value);
                   }}
@@ -225,14 +252,16 @@ function App() {
             <button type="button" 
                 onClick={handleBuscar}
             className="btn btn-success ml-2">Consultar</button>
-            <button type="button" className="btn btn-warning">Actualizar</button>
+            <button type="button" 
+              onClick={editarArticulo}
+            className="btn btn-warning">Actualizar</button>
             <button type="button" className="btn btn-danger">Eliminar</button>
         </div>
         </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Articulo</span>
-          <input type="text" required className="form-control" value={articulo}
+          <input type="text" readOnly={isReadOnly} className="form-control" value={articulo}
                   onChange={(event)=>{
                     setArticulo(event.target.value);
                   }}
@@ -242,7 +271,7 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Marca</span>
-          <input type="text" className="form-control" value={marca}
+          <input type="text" readOnly={isReadOnly} className="form-control" value={marca}
                   onChange={(event)=>{
                     setMarca(event.target.value);
                   }}
@@ -252,7 +281,7 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Modelo</span>
-          <input type="text" className="form-control" value={modelo}
+          <input type="text" readOnly={isReadOnly} className="form-control" value={modelo}
                   onChange={(event)=>{
                     setModelo(event.target.value);
                   }}
@@ -262,10 +291,10 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
         <label className="input-group-text">Departamento</label>
-          <select className="form-select" id="inputGroupSelect01"
+          <select className="form-select" id="inputGroupSelect01" disabled={isReadOnly}
           onChange={(event) => setDepartamento(event.target.value)}
             aria-describedby="basic-addon1">
-            <option value={departamento}>{departamento? departamento :"Seleccione Departamento"}</option>
+            <option value={departamento} >{departamento? departamento :"Seleccione Departamento"}</option>
             {listaDepartamentos.map(departamentos => (
             <option key={departamentos.id} value={departamentos.id}
             
@@ -279,14 +308,14 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <label className="input-group-text">Clase</label>
-          <select
+          <select 
             className="form-select"
             onChange={(event) => setClase(event.target.value)}
             value={clase}
 
 
-            disabled={!departamento}>
-            <option value="" >Seleccione Clase</option>
+            disabled={!departamento ? true : isReadOnly}>
+            <option value="">Seleccione Clase</option>
             {listaClases.map(clase => (
               <option key={clase.id} value={clase.id}>
                 {clase.id} - {clase.nombre}
@@ -303,7 +332,7 @@ function App() {
           className="form-select"
           onChange={(event) => setFamilia(event.target.value)}
           value={familia}
-          disabled={!clase}>
+          disabled={!clase ? true : isReadOnly}>
           <option value="">Seleccione Familia</option>
           {listaFamilias.map(familia => (
             <option key={familia.id} value={familia.id}>
@@ -317,13 +346,13 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Fecha Alta</span>
-          <input type="date" className="form-control" value={fechaalta} aria-describedby="basic-addon1" disabled/>
+          <input type="date" readOnly={isReadOnly} className="form-control" value={fechaalta} aria-describedby="basic-addon1" disabled/>
         </div>
         </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Stock</span>
-          <input type="number" className="form-control" value={stock}
+          <input type="number" readOnly={isReadOnly} className="form-control" value={stock}
                   onChange={(event)=>{
                     setStock(event.target.value);
                   }}
@@ -333,7 +362,7 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Cantidad</span>
-          <input type="number" className="form-control" value={cantidad}
+          <input type="number" readOnly={isReadOnly} className="form-control" value={cantidad}
                   onChange={(event)=>{
                     setCantidad(event.target.value);
                   }}
@@ -343,16 +372,23 @@ function App() {
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Descontinuado</span>
-          <input type="number" className="form-control" value={descontinuado} placeholder="0" aria-describedby="basic-addon1" disabled/>
+          <input type="number" readOnly={isReadOnly} className="form-control" value={descontinuado} placeholder="0" aria-describedby="basic-addon1" disabled={esDescontinuado}/>
         </div>
         </div>
         <div className="card-body">
         <div className="input-group input-group-sm mb-3">
           <span className="input-group-text" id="basic-addon1">Fecha Baja</span>
-          <input type="date" className="form-control" value={fechabaja} placeholder="Articulo" aria-describedby="basic-addon1" disabled/>
+          <input type="date" readOnly={isReadOnly} className="form-control" value={fechabaja} placeholder="Articulo" aria-describedby="basic-addon1" disabled/>
         </div>
         </div>
-        <button className='btn btn-primary' onClick={agregar}>Registrar</button>
+        {
+          editar?
+          <div>
+          <button className='btn btn-warning m-2' onClick={update}>Actualizar</button> 
+          <button className='btn btn-success m-2' onClick={limpiarCampos}>Cancelar</button>
+          </div>
+          : <button className='btn btn-primary' onClick={agregar}>Registrar</button>
+        }
       </div>
     </div>
     </div>

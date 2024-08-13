@@ -32,10 +32,10 @@ app.post("/create", (req, res)=>{
 
 });
 
-app.put("/update", (req, res)=>{
-  const { sku, articulo, marca, modelo, departamento, clase, familia, fechaalta, stock, 
-      cantidad, descontinuado, fechabaja } = req.body;
-
+app.put("/update/:sku", (req, res)=>{
+  const { articulo, marca, modelo, departamento, clase, familia, stock, 
+      cantidad, descontinuado } = req.body;
+  const { sku } = req.params;
       //pendiente fecha alta y de baja
   db.query('UPDATE articulos SET articulo=?, marca=?, modelo=?, departamento=?, clase=?, familia=?, stock=?, cantidad=?, descontinuado=? WHERE sku=?',[articulo, marca, modelo, departamento, clase, familia, stock, cantidad, descontinuado, sku],
       (err, result)=>{
